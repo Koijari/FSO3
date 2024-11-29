@@ -1,11 +1,13 @@
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
 const generateId = () => {
   const newId = Math.floor(Math.random()*50)
   return String(newId)
 }
 
 app.use(express.json())
+app.use(morgan('tiny'))
 
 let persons = [
 
@@ -61,16 +63,16 @@ app.post('/api/persons', (request, response) => {
   const bookNames = [];
   
   persons.forEach(person => bookNames.push(person.name))
-  console.log(bookNames)
+  //console.log(bookNames)
 
   if (!body.name || !body.number) {
     return response.status(400).json({ 
-      error: 'Name and number are requierd'
+      error: 'Name and number are required'
     })
   }
 
   if (bookNames.includes(body.name)) {
-    return response.status(400).json({ 
+    return response.status(400).json({  // olisiko status 409 parempi?
       error: 'Name must be unique' 
     });
   }
@@ -82,6 +84,8 @@ app.post('/api/persons', (request, response) => {
   }
 
   persons = persons.concat(person)
+
+  console.log(morgan('tiny'))
 
   response.json(person)
 })
