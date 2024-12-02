@@ -6,8 +6,14 @@ const generateId = () => {
   return String(newId)
 }
 
+const cors = require('cors')
+
+app.use(cors())
+
+app.use(express.static('dist'))
+
 app.use(express.json())
-app.use(morgan('tiny'))
+//app.use(morgan('tiny'))
 
 let persons = [
 
@@ -27,6 +33,13 @@ let persons = [
     number:'050-7707770'
   }
 ]
+
+morgan.token('body', (request) => { // oma mod-token
+  return JSON.stringify(request.body)
+})
+
+// 'tiny' mallinnus
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 app.get('/info', (request, response) => {
   let date = new Date()  
@@ -85,12 +98,10 @@ app.post('/api/persons', (request, response) => {
 
   persons = persons.concat(person)
 
-  console.log(morgan('tiny'))
-
   response.json(person)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
